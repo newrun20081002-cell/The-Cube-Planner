@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Cube Planner</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>3D Cube Planner</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="cube-container"></div>
-
-  <!-- Note Modal -->
-  <div id="modal" class="hidden">
-    <h2 id="modal-title">Category</h2>
-    <textarea id="note" placeholder="Write your note here..."></textarea>
-    <div class="buttons">
-      <button id="save">Save</button>
-      <button id="close">Close</button>
+    <h1>3D Cube Planner</h1>
+    
+    <!-- 큐브 컨테이너 -->
+    <div id="cube-container">
+        <div id="cube">
+            <div class="face" id="face-1">Schedule</div>
+            <div class="face" id="face-2">Habits</div>
+            <div class="face" id="face-3">Ideas</div>
+            <div class="face" id="face-4">To-Do</div>
+            <div class="face" id="face-5">Goals</div>
+            <div class="face" id="face-6">Free Notes</div>
+        </div>
     </div>
-  </div>
 
-  <!-- Three.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-  <script src="script.js"></script>
+    <!-- 입력창 -->
+    <div id="note-container">
+        <textarea id="note-text" placeholder="Enter note here..."></textarea>
+        <button id="save-button">Save</button>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
+
+
+
