@@ -1,97 +1,61 @@
-// Basic setup
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x121212);
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('cube-container').appendChild(renderer.domElement);
-
-// Lights
-const light = new THREE.PointLight(0xffffff, 1);
-light.position.set(10, 10, 10);
-scene.add(light);
-const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-scene.add(ambientLight);
-
-// Cube
-const materials = [
-    new THREE.MeshStandardMaterial({ color: 0xff5555 }),
-    new THREE.MeshStandardMaterial({ color: 0x55ff55 }),
-    new THREE.MeshStandardMaterial({ color: 0x5555ff }),
-    new THREE.MeshStandardMaterial({ color: 0xffff55 }),
-    new THREE.MeshStandardMaterial({ color: 0xff55ff }),
-    new THREE.MeshStandardMaterial({ color: 0x55ffff }),
-];
-const cube = new THREE.Mesh(new THREE.BoxGeometry(), materials);
-scene.add(cube);
-
-camera.position.z = 5;
-
-// Mouse rotation
+let cube = document.getElementById('cube');
 let isDragging = false;
-let previousMousePosition = { x: 0, y: 0 };
+let previousX, previousY;
+let rotateX = -20, rotateY = 20;
+let currentFace = 1; // 기본 면
 
-renderer.domElement.addEventListener('mousedown', () => { isDragging = true; });
-renderer.domElement.addEventListener('mouseup', () => { isDragging = false; });
-renderer.domElement.addEventListener('mousemove', (event) => {
-    if (isDragging) {
-        let deltaMove = { x: event.offsetX - previousMousePosition.x, y: event.offsetY - previousMousePosition.y };
-        cube.rotation.y += deltaMove.x * 0.01;
-        cube.rotation.x += deltaMove.y * 0.01;
-    }
-    previousMousePosition = { x: event.offsetX, y: event.offsetY };
+// 마우스 드래그로 회전
+cube.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    previousX = e.clientX;
+    previousY = e.clientY;
+});
+document.addEventListener('mouseup', function() { isDragging = false; });
+document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    let deltaX = e.clientX - previousX;
+    let deltaY = e.clientY - previousY;
+    rotateY += deltaX * 0.5;
+    rotateX -= deltaY * 0.5;
+    cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    previousX = e.clientX;
+    previousY = e.clientY;
 });
 
-// Cube face click detection (Raycaster)
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-function onClick(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObject(cube);
-    if (intersects.length > 0) {
-        const faceIndex = Math.floor(intersects[0].faceIndex / 2);
-        openModal(faceIndex);
-    }
-}
-window.addEventListener('click', onClick);
-
-// Modal
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modal-title');
-const noteArea = document.getElementById('note');
-let currentFace = 0;
-
-const faceNames = ["Schedule", "Habits", "Ideas", "To-Do", "Goals", "Free Notes"];
-
-function openModal(faceIndex) {
-    currentFace = faceIndex;
-    modalTitle.textContent = faceNames[faceIndex];
-    noteArea.value = localStorage.getItem("face" + faceIndex) || "";
-    modal.classList.remove('hidden');
+// LocalStorage 저장/불러오기
+function saveNote(face, text) {
+    localStorage.setItem('cubeFace_' + face, text);
 }
 
-document.getElementById('save').addEventListener('click', () => {
-    localStorage.setItem("face" + currentFace, noteArea.value);
-    modal.classList.add('hidden');
-});
-
-document.getElementById('close').addEventListener('click', () => {
-    modal.classList.add('hidden');
-});
-
-// Animation loop
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+function loadNote(face) {
+    return localStorage.getItem('cubeFace_' + face) || '';
 }
-animate();
 
-// Handle window resize
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+// 현재 면 메모 불러오기
+function loadCurrentNote() {
+    document.getElementById('note-text').value = loadNote(currentFace);
+}
+
+// 면 클릭 시 입력창으로 이동
+for (let i = 1; i <= 6; i++) {
+    document.getElementById('face-' + i).addEventListener('click', function() {
+        currentFace = i;
+        loadCurrentNote();
+        document.getElementById('note-text').focus();
+    });
+}
+
+// Save 버튼 클릭
+document.getElementById('save-button').addEventListener('click', function() {
+    let text = document.getElementById('note-text').value;
+    saveNote(currentFace, text);
+    alert('Saved!');
 });
+
+// 페이지 로드 시 초기화
+window.onload = function() {
+    cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    loadCurrentNote();
+};
+
+
