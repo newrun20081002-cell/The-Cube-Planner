@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: #121212; /* Dark background */
+  font-family: Arial, sans-serif;
+}
+
+#modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: white;
+  z-index: 10;
+}
+
+.hidden {
+  display: none;
+}
+
+textarea {
+  width: 300px;
+  height: 150px;
+  background: #2a2a2a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
